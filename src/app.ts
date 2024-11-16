@@ -5,8 +5,14 @@ import db from './config/database';
 
 const app = express();
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World');
+app.get('/', async (req: Request, res: Response) => {
+    try {
+        const allJobsInDb = await db.query('SELECT * FROM jobs');
+        
+        console.log(allJobsInDb.rows)
+    } catch (error) {
+        console.error('Error fetching all job postings:', error);
+    }
 });
 
 app.listen(PORT, () => {
