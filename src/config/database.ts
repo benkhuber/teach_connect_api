@@ -18,12 +18,12 @@ class Database{
         return this.pool.connect();
     }
 
-    async query(queryText: string) {
+    async query(queryText: string, params: any[] = []): Promise<any> {
         const client = await this.connect();
 
         try {
-            const res = await client.query(queryText);
-            return res;
+            const res = await client.query(queryText, params);
+            return res.rows;
         } catch (err) {
             console.error('Error querying DB: ', err);
         } finally {

@@ -15,13 +15,23 @@ router.get('/', async (req: Request, res: Response) => {
 router.post('/signup', async (req: Request, res: Response) => {
     try {
         const data = req.body;
-        const email = [data.email];
-
         const query = 'SELECT * FROM users WHERE email = $1'
+        const emailInDbCheck = await db.query(query, [data.email])
+        const emailExistsinDb = emailInDbCheck.length > 0;
 
-        const emailAlreadyExists = await db.pool.query(query, email)
-
-        console.log(emailAlreadyExists);
+        if (emailExistsinDb) {
+            console.log('email already exists in db');
+        } else {
+            const insertQuery = 'INSERT INTO users (firstname, lastname, email, password) VALUES ($1, $2, $3, $4)'
+            const values = [
+                data.firstname,
+                data.lastname,
+                data.email,
+                data.password
+            ]
+            db.query(insertQuery, values);
+            console.log('email does not exist, added to db');
+        }
 
     } catch (error) {
         console.error('Error signing up')
